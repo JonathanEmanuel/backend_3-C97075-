@@ -1,18 +1,10 @@
 import express from "express";
 import { Command } from "commander";
+import { fork } from 'child_process';
 import config from './config/config.js'
 
 import { listNumbers } from './utils/listNumbers.js'
 import { operacionCompleja } from "./utils/operacionCompleja.js";
-
-// TRabajando con argumentos de CLI
-/*
-    console.log( process.pid);
-    console.log('Versión de Node', process.version);
-    console.log('Uso de memoria', process.memoryUsage());
-    const argumentos =  process.argv;
-    console.log('Argumentos:', argumentos)
-*/
 
 
 const program = new Command();
@@ -42,11 +34,20 @@ app.get('/', (req, res) => {
     res.json({ messege:'Ok', mode: 'modo'})
 })
 
-
+// Operación bloqueante
 app.get('/operacion', (req, res) => {
     const resultado = operacionCompleja();
-    res.send('El resultado es: ', resultado);
+    res.send('El resultado es: ' + resultado);
 })
+// Operación no Bloqueante
+app.get('/nobloq', (req, res) => {
+    const child = fork('./utils/operacionCompleja.js');
+    child.send('inicia el proceso');
+    child.on('message', resultado => {
+        res.send('El resultado es: ' + resultado);
+    })
+})
+
 app.listen( PORT, () => {
     console.log(`Servidor en el puerto ${PORT}`);
 });
