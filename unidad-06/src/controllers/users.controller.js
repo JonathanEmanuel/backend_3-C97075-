@@ -12,6 +12,11 @@ const getUser = async(req,res)=> {
     res.send({status:"success",payload:user})
 }
 
+const postUser = async(req, res) => {
+    const data = req.body;
+    const user = await usersService.create(data);
+    res.send({status:"success",payload:user})
+}
 const updateUser =async(req,res)=>{
     const updateBody = req.body;
     const userId = req.params.uid;
@@ -31,5 +36,6 @@ export default {
     deleteUser,
     getAllUsers,
     getUser,
-    updateUser
+    updateUser,
+    postUser
 }
